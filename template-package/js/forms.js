@@ -1,188 +1,196 @@
 /**
- * ملف وظائف النماذج (إنشاء وتعديل المنشورات)
- * تم استخراجه من create_post.html و edit_post.html
+ * ملف وظائف البحث والاقتراحات
  */
 
-// ========================
-// نظام عداد الأحرف التلقائي
-// ========================
-function initCharacterCounters() {
-    const charCounters = {
-        'id_title': 200,
-        'id_excerpt': 300,
-        'id_seo_title': 200,
-        'id_seo_description': 300
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ search.js loaded successfully');
 
-    Object.keys(charCounters).forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                const maxLength = charCounters[fieldId];
+    const searchInput = document.getElementById('search-input');
+    const searchForm = document.getElementById('search-form');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    const liveResults = document.getElementById('live-search-results');
+    const emptyState = document.getElementById('search-empty-state');
+    const loadingState = document.getElementById('search-loading');
+    const resultsCount = document.getElementById('results-count');
+    const recentSearchesDiv = document.getElementById('recent-searches');
+    const recentSearchesList = document.getElementById('recent-searches-list');
 
-                if (field) {
-                    function updateCounter() {
-                        const currentLength = field.value.length;
-                        const remaining = maxLength - currentLength;
+    let searchTimeout;
 
-                        // البحث عن العداد أو إنشاؤه
-                        let counter = document.getElementById(`${fieldId}_counter`);
-                        if (!counter) {
-                            counter = document.createElement('div');
-                            counter.id = `${fieldId}_counter`;
-                            counter.className = 'character-counter';
-                            field.parentNode.insertBefore(counter, field.nextSibling);
-                        }
-
-                        counter.innerHTML = `
-                    <span class="${remaining < 0 ? 'text-red-500' : (remaining < 20 ? 'text-yellow-500' : 'text-gray-500')}">
-                        ${currentLength}/${maxLength} حرف
-                        ${remaining < 0 ? ` (تجاوزت الحد بـ ${Math.abs(remaining)} حرف)` : ''}
-                    </span>
+    // تحميل عمليات البحث السابقة
+    function loadRecentSearches() {
+        const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        if (recent.length > 0 && recentSearchesDiv && recentSearchesList) {
+            recentSearchesDiv.classList.remove('hidden');
+            recentSearchesList.innerHTML = '';
+            recent.slice(0, 5).forEach(term => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded';
+                item.innerHTML = `
+                    <button onclick="setSearchTerm('${escapeHtml(term)}')" class="flex-1 text-right">${escapeHtml(term)}</button>
+                    <button onclick="removeRecentSearch('${escapeHtml(term)}')" class="text-red-500 text-sm">✕</button>
                 `;
-                counter.classList.toggle('over-limit', remaining < 0);
-                
-                // تغيير مظهر الحقل
-                if (remaining < 0) {
-                    field.style.borderColor = '#ef4444';
-                    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
-                    field.classList.add('input-error');
-                } else if (remaining < 10) {
-                    field.style.borderColor = '#f59e0b';
-                    field.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
-                    field.classList.remove('input-error');
-                    field.classList.add('input-alert');
-                } else {
-                    field.style.borderColor = '';
-                    field.style.boxShadow = '';
-                    field.classList.remove('input-error', 'input-alert');
-                }
-                
-                // تحديث المعاينة لـ SEO
-                updateSEOPreview(fieldId, field.value);
-            }
-            
-            field.addEventListener('input', updateCounter);
-            field.addEventListener('focus', updateCounter);
-            updateCounter();
-        }
-    });
-}
-
-// ========================
-// تحديث معاينة SEO
-// ========================
-function updateSEOPreview(fieldId, value) {
-    if (fieldId === 'id_seo_title') {
-        const preview = document.getElementById('seo_title_preview');
-        if (preview) preview.textContent = value || 'عنوان SEO سيظهر هنا';
-    }
-    if (fieldId === 'id_seo_description') {
-        const preview = document.getElementById('seo_description_preview');
-        if (preview) preview.textContent = value || 'وصف SEO سيظهر هنا...';
-    }
-}
-
-// ========================
-// معاينة الصور
-// ========================
-function initImagePreviews() {
-    function previewImage(inputId, previewId, imgId) {
-        const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-        const img = document.getElementById(imgId);
-        
-        if (input && preview && img) {
-            input.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        img.src = e.target.result;
-                        preview.classList.remove('hidden');
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    preview.classList.add('hidden');
-                }
+                recentSearchesList.appendChild(item);
             });
         }
     }
 
-    previewImage('id_featured_image', 'featured_image_preview', 'featured_image_preview_img');
-    previewImage('id_image', 'image_preview', 'image_preview_img');
-}
-
-// ========================
-// نظام البلوكات (Drag & Drop)
-// ========================
-let blocks = [];
-let blockCounter = 0;
-let draggedBlock = null;
-
-function initBlocksSystem(existingBlocks = []) {
-    blocks = existingBlocks;
-    if (blocks.length > 0) {
-        blockCounter = Math.max(...blocks.map(b => parseInt(b.id.replace('block_', '')) || 0)) + 1;
+    // حفظ عملية البحث
+    function saveRecentSearch(term) {
+        if (!term.trim()) return;
+        let recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        recent = recent.filter(t => t !== term);
+        recent.unshift(term);
+        recent = recent.slice(0, 10);
+        localStorage.setItem('recentSearches', JSON.stringify(recent));
+        loadRecentSearches();
     }
-    renderBlocks();
-    initDragAndDrop();
-}
 
-function addTextBlock(content = '') {
-    const blockId = `block_${blockCounter++}`;
-    const block = {
-        id: blockId,
-        type: 'text',
-        content: content,
-        order: blocks.length
+    window.setSearchTerm = function(term) {
+        if (searchInput) {
+            searchInput.value = term;
+            performSearch(term);
+        }
     };
-    blocks.push(block);
-    renderBlocks();
-    
-    setTimeout(() => {
-        const textarea = document.querySelector(`#${blockId} textarea`);
-        if (textarea) textarea.focus();
-    }, 100);
-}
 
-function addImageBlock(imageUrl = '') {
-    const blockId = `block_${blockCounter++}`;
-    const block = {
-        id: blockId,
-        type: 'image',
-        content: imageUrl,
-        order: blocks.length
+    window.removeRecentSearch = function(term) {
+        let recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        recent = recent.filter(t => t !== term);
+        localStorage.setItem('recentSearches', JSON.stringify(recent));
+        loadRecentSearches();
     };
-    blocks.push(block);
-    renderBlocks();
-}
 
-function updateBlock(id, content) {
-    const block = blocks.find(b => b.id === id);
-    if (block) {
-        block.content = content;
-        updateBlocksData();
+    window.clearRecentSearches = function() {
+        if (confirm('هل تريد مسح كل عمليات البحث السابقة؟')) {
+            localStorage.removeItem('recentSearches');
+            loadRecentSearches();
+        }
+    };
+
+    // تنفيذ البحث (محاكاة)
+    async function performSearch(query) {
+        if (!query.trim() || query.length < 2) {
+            hideSuggestions();
+            return;
+        }
+
+        showLoading();
+
+        // محاكاة بيانات البحث (للتجربة)
+        const mockResults = [{
+                title: 'أفضل أدوات الذكاء الاصطناعي',
+                url: 'post-detail.html'
+            },
+            {
+                title: 'تعلم اللغة الإنجليزية من الصفر',
+                url: 'post-detail.html'
+            },
+            {
+                title: 'كورسات البرمجة للمبتدئين',
+                url: 'post-detail.html'
+            }
+        ].filter(item => item.title.includes(query) || query.includes('كورس') || query.includes('تعلم'));
+
+        setTimeout(() => {
+            if (mockResults.length > 0) {
+                showResults(mockResults);
+                if (resultsCount) resultsCount.textContent = mockResults.length;
+            } else {
+                showEmptyState();
+                if (resultsCount) resultsCount.textContent = '0';
+            }
+            hideLoading();
+        }, 300);
     }
-}
 
-function removeBlock(id) {
-    blocks = blocks.filter(b => b.id !== id);
-    blocks.forEach((block, index) => { block.order = index; });
-    renderBlocks();
-}
-
-function moveBlockUp(id) {
-    const index = blocks.findIndex(b => b.id === id);
-    if (index > 0) {
-        [blocks[index], blocks[index-1]] = [blocks[index-1], blocks[index]];
-        blocks.forEach((block, i) => block.order = i);
-        renderBlocks();
+    function showResults(results) {
+        if (liveResults) {
+            liveResults.innerHTML = '';
+            results.forEach(item => {
+                const result = document.createElement('a');
+                result.href = item.url;
+                result.className = 'block p-4 hover:bg-gray-100 dark:hover:bg-gray-700 border-b dark:border-gray-700';
+                result.innerHTML = `<div class="font-medium">${escapeHtml(item.title)}</div><div class="text-sm text-gray-500">${escapeHtml(item.url)}</div>`;
+                liveResults.appendChild(result);
+            });
+        }
+        if (emptyState) emptyState.classList.add('hidden');
+        showSuggestions();
     }
-}
 
-function moveBlockDown(id) {
-    const index = blocks.findIndex(b => b.id === id);
-    if (index < blocks.length - 1) {
-        [blocks[index], blocks[index+1]] = [blocks[index+1], blocks[index]];
-        blocks.forEach((block, i) => block.order = i);
+    function showEmptyState() {
+        if (liveResults) liveResults.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        showSuggestions();
+    }
+
+    function showLoading() {
+        if (loadingState) loadingState.classList.remove('hidden');
+        if (liveResults) liveResults.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+    }
+
+    function hideLoading() {
+        if (loadingState) loadingState.classList.add('hidden');
+    }
+
+    function showSuggestions() {
+        if (searchSuggestions) {
+            searchSuggestions.style.display = 'block';
+            setTimeout(() => searchSuggestions.classList.remove('opacity-0', 'translate-y-2'), 10);
+        }
+    }
+
+    function hideSuggestions() {
+        if (searchSuggestions) {
+            searchSuggestions.classList.add('opacity-0', 'translate-y-2');
+            setTimeout(() => searchSuggestions.style.display = 'none', 300);
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            searchTimeout = setTimeout(() => performSearch(query), 300);
+        });
+
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2) performSearch(this.value);
+        });
+    }
+
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const query = searchInput ? .value.trim();
+            if (query) saveRecentSearch(query);
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (searchForm && !searchForm.contains(e.target)) hideSuggestions();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') hideSuggestions();
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput ? .focus();
+        }
+    });
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    loadRecentSearches();
+});     blocks.forEach((block, i) => block.order = i);
         renderBlocks();
     }
 }
