@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء منشور جديد - كنوز</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/4.16.2/full-all/ckeditor.js"></script>
+
+    <!-- الملفات الخاصة بالمشروع -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/forms.css">
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- شريط التنقل (نفس السابق) -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2"><img src="https://via.placeholder.com/64x64" class="h-16" alt="Logo"></a>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link">الرئيسية</a>
+                <a href="category-courses.html" class="nav-link">الكورسات</a>
+                <a href="category-articles.html" class="nav-link">المقالات</a>
+                <a href="category-grants.html" class="nav-link">المنح</a>
+                <a href="category-books.html" class="nav-link">الكتب</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 focus:outline-none">
+                        <div class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">أ</div>
+                        <span class="text-gray-700 dark:text-gray-300">أحمد</span>
+                        <i class="fas fa-chevron-down text-gray-500 dark:text-gray-400 text-sm"></i>
+                    </button>
+                    <div id="user-menu" class="absolute left-0 mt-3 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-2xl py-2 border border-gray-100 dark:border-gray-700 opacity-0 invisible scale-95 transition-all duration-200 origin-top-right z-50">
+                        <a href="dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم</a>
+                        <a href="create-post.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-plus-circle ml-2"></i> إنشاء منشور</a>
+                        <div class="border-t my-2 dark:border-gray-700"></div>
+                        <form action="#" method="post"><button type="submit" class="block w-full text-right px-4 py-2 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج</button></form>
+                    </div>
+                </div>
+            </div>
+            <button class="md:hidden text-xl" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- محتوى الصفحة -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">إنشاء منشور جديد</h1>
+            <p class="text-gray-600 dark:text-gray-300">املأ النموذج أدناه لإنشاء منشور جديد على المنصة</p>
+        </div>
+
+        <form id="postForm" method="POST" enctype="multipart/form-data" class="editor-container">
+            <input type="hidden" name="blocks_data" id="blocks_data" value="[]">
+
+            <!-- رأس المحرر -->
+            <div class="editor-header">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">معلومات المنشور</h2>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">املأ المعلومات الأساسية للمنشور</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-500 dark:text-gray-400"><i class="fas fa-user ml-1"></i> أحمد محمد</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جسم المحرر -->
+            <div class="editor-body">
+                <!-- تبويبات -->
+                <div class="tab-container">
+                    <button type="button" class="tab-btn active" data-tab="basic"><i class="fas fa-info-circle ml-2"></i> المعلومات الأساسية</button>
+                    <button type="button" class="tab-btn" data-tab="content"><i class="fas fa-align-left ml-2"></i> المحتوى</button>
+                    <button type="button" class="tab-btn" data-tab="seo"><i class="fas fa-search ml-2"></i> تحسين محركات البحث</button>
+                    <button type="button" class="tab-btn" data-tab="advanced"><i class="fas fa-cog ml-2"></i> الإعدادات المتقدمة</button>
+                </div>
+
+                <!-- تبويب المعلومات الأساسية -->
+                <div id="basic-tab" class="tab-content active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label for="id_title" class="form-label"><i class="fas fa-heading ml-1"></i> العنوان *</label>
+                            <input type="text" name="title" id="id_title" class="form-control" placeholder="أدخل عنوان المنشور" maxlength="200">
+                            <div class="character-counter" id="title_counter"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_category" class="form-label"><i class="fas fa-folder ml-1"></i> الفئة *</label>
+                            <select name="category" id="id_category" class="form-control form-select">
+                                <option value="">اختر الفئة</option>
+                                <option value="1">كورسات</option>
+                                <option value="2">مقالات</option>
+                                <option value="3">منح</option>
+                                <option value="4">كتب</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_featured_image" class="form-label"><i class="fas fa-image ml-1"></i> الصورة الرئيسية</label>
+                            <input type="file" name="featured_image" id="id_featured_image" class="form-control" accept="image/*">
+                            <div id="featured_image_preview" class="preview-box hidden mt-2"><img id="featured_image_preview_img" class="image-preview" alt="معاينة الصورة"></div>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">الصورة التي ستظهر في أعلى المنشور</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_image" class="form-label"><i class="fas fa-image ml-1"></i> الصورة المصغرة</label>
+                            <input type="file" name="image" id="id_image" class="form-control" accept="image/*">
+                            <div id="image_preview" class="preview-box hidden mt-2"><img id="image_preview_img" class="image-preview" alt="معاينة الصورة"></div>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">الصورة التي ستظهر في قائمة المنشورات</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_status" class="form-label"><i class="fas fa-circle ml-1"></i> حالة النشر</label>
+                            <select name="status" id="id_status" class="form-control form-select">
+                                <option value="draft">مسودة</option>
+                                <option value="published">منشور</option>
+                                <option value="private">خاص</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_publish_date" class="form-label"><i class="fas fa-calendar ml-1"></i> تاريخ النشر</label>
+                            <input type="datetime-local" name="publish_date" id="id_publish_date" class="form-control">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">اتركه فارغاً للنشر فورياً</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب المحتوى -->
+                <div id="content-tab" class="tab-content">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="form-group">
+                            <label for="id_excerpt" class="form-label"><i class="fas fa-file-alt ml-1"></i> الملخص</label>
+                            <textarea name="excerpt" id="id_excerpt" class="form-control" rows="3" placeholder="ملخص مختصر للمنشور..." maxlength="300"></textarea>
+                            <div class="character-counter" id="excerpt_counter"></div>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">ملخص مختصر يظهر في صفحة العرض</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_content" class="form-label"><i class="fas fa-edit ml-1"></i> المحتوى *</label>
+                            <textarea name="content" id="id_content" class="form-control" rows="10" placeholder="اكتب محتوى المنشور هنا..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-layer-group ml-1"></i> بلوكات المحتوى</label>
+                            <div class="mb-4">
+                                <div class="flex gap-2 mb-4">
+                                    <button type="button" onclick="addTextBlock()" class="btn-outline"><i class="fas fa-paragraph ml-1"></i> إضافة نص</button>
+                                    <button type="button" onclick="addImageBlock()" class="btn-outline"><i class="fas fa-image ml-1"></i> إضافة صورة</button>
+                                </div>
+                                <div id="blocks_container" class="space-y-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب SEO -->
+                <div id="seo-tab" class="tab-content">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="form-group">
+                            <label for="id_seo_title" class="form-label"><i class="fas fa-search ml-1"></i> عنوان SEO</label>
+                            <input type="text" name="seo_title" id="id_seo_title" class="form-control" placeholder="عنوان تحسين محركات البحث" maxlength="200">
+                            <div class="character-counter" id="seo_title_counter"></div>
+                            <div class="preview-box mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">معاينة:</p>
+                                <p id="seo_title_preview" class="text-gray-900 dark:text-white font-medium"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_seo_description" class="form-label"><i class="fas fa-search ml-1"></i> وصف SEO</label>
+                            <textarea name="seo_description" id="id_seo_description" class="form-control" rows="3" placeholder="وصف تحسين محركات البحث" maxlength="300"></textarea>
+                            <div class="character-counter" id="seo_description_counter"></div>
+                            <div class="preview-box mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">معاينة:</p>
+                                <p id="seo_description_preview" class="text-gray-600 dark:text-gray-300"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_seo_keywords" class="form-label"><i class="fas fa-tags ml-1"></i> الكلمات المفتاحية</label>
+                            <input type="text" name="seo_keywords" id="id_seo_keywords" class="form-control" placeholder="كلمة1, كلمة2, كلمة3">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">افصل الكلمات بفواصل</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب الإعدادات المتقدمة -->
+                <div id="advanced-tab" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label for="id_link" class="form-label"><i class="fas fa-link ml-1"></i> رابط خارجي</label>
+                            <input type="url" name="link" id="id_link" class="form-control" placeholder="https://example.com">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">رابط خارجي للمنشور</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_link_delay" class="form-label"><i class="fas fa-clock ml-1"></i> تأخير الرابط (ثواني)</label>
+                            <input type="number" name="link_delay" id="id_link_delay" class="form-control" value="30" min="0" max="60">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">وقت الانتظار قبل الانتقال للرابط</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار الإجراءات -->
+            <div class="action-buttons">
+                <button type="submit" name="save_draft" class="btn-secondary"><i class="fas fa-save ml-2"></i> حفظ كمسودة</button>
+                <button type="submit" name="publish_now" class="btn-primary"><i class="fas fa-paper-plane ml-2"></i> نشر الآن</button>
+                <a href="dashboard.html" class="btn-outline"><i class="fas fa-times ml-2"></i> إلغاء</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- الأزرار الثابتة والقوائم (نفس السابق) -->
+    <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i><span class="tooltip">الوضع الداكن</span></button>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i><span class="tooltip">العودة للأعلى</span></button>
+
+    <div id="loading-overlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-[100] flex items-center justify-center transition-opacity duration-500">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            <p class="mt-4">جاري التحميل...</p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/forms.js"></script>
+    <script>
+        // دالة مساعدة لإضافة كتلة نصية من الـ console
+        window.addTextBlock = addTextBlock;
+        window.addImageBlock = addImageBlock;
+        window.updateBlock = updateBlock;
+        window.removeBlock = removeBlock;
+        window.moveBlockUp = moveBlockUp;
+        window.moveBlockDown = moveBlockDown;
+        window.handleImageUpload = handleImageUpload;
+    </script>
+</body>
+
+</html>

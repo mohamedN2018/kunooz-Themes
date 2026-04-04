@@ -1,0 +1,1013 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}إنشاء منشور جديد - كنوز{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* تنسيقات خاصة لصفحة إنشاء المنشور */
+    .editor-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .dark .editor-container {
+        background: #1e293b;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .editor-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1.5rem;
+    }
+
+    .dark .editor-header {
+        border-bottom-color: #374151;
+    }
+
+    .editor-body {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+
+    .dark .form-label {
+        color: #d1d5db;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+        color: #374151;
+        transition: all 0.3s ease;
+    }
+
+    .dark .form-control {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .dark .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-select {
+        cursor: pointer;
+    }
+
+    .character-counter {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .character-counter.over-limit {
+        color: #ef4444;
+        font-weight: 500;
+    }
+
+    .dark .character-counter.over-limit {
+        color: #f87171;
+    }
+
+    .preview-box {
+        background: #f9fafb;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 150px;
+    }
+
+    .dark .preview-box {
+        background: #374151;
+        border-color: #4b5563;
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+    }
+
+    .block-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .dark .block-item {
+        background: #374151;
+        border-color: #4b5563;
+    }
+
+    .block-item:hover {
+        border-color: #3b82f6;
+    }
+
+    .block-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-icon:hover {
+        transform: translateY(-1px);
+    }
+
+    .block-handle {
+        cursor: move;
+        color: #6b7280;
+    }
+
+    .dark .block-handle {
+        color: #9ca3af;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #4b5563;
+        transform: translateY(-1px);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .dark .btn-outline {
+        border-color: #4b5563;
+        color: #d1d5db;
+    }
+
+    .btn-outline:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+    }
+
+    .dark .action-buttons {
+        border-top-color: #374151;
+        background: #1f2937;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .dark .error-message {
+        color: #f87171;
+    }
+
+    /* تحسينات للـ CKEditor */
+    .ck-editor__editable {
+        min-height: 300px;
+        color: #374151;
+    }
+
+    .dark .ck-editor__editable {
+        background: #374151;
+        color: #f9fafb;
+    }
+
+    .dark .ck.ck-editor__main .ck-content {
+        background: #374151;
+        color: #f9fafb;
+        border-color: #4b5563;
+    }
+
+    /* تنسيقات الـ tabs */
+    .tab-container {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+    }
+
+    .dark .tab-container {
+        border-bottom-color: #374151;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        font-weight: 600;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .dark .tab-btn {
+        color: #9ca3af;
+    }
+
+    .tab-btn:hover {
+        color: #3b82f6;
+    }
+
+    .tab-btn.active {
+        color: #3b82f6;
+    }
+
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #3b82f6;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* استجابة للشاشات الصغيرة */
+    @media (max-width: 768px) {
+        .editor-container {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons button {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- عنوان الصفحة -->
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">إنشاء منشور جديد</h1>
+        <p class="text-gray-600 dark:text-gray-300">املأ النموذج أدناه لإنشاء منشور جديد على المنصة</p>
+    </div>
+
+    <!-- رسائل الأخطاء -->
+    {% if form.errors %}
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 ml-2"></i>
+            <h3 class="font-semibold text-red-800 dark:text-red-300">يوجد أخطاء في النموذج:</h3>
+        </div>
+        <ul class="mt-2 text-red-700 dark:text-red-400 text-sm list-disc list-inside">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form id="postForm" method="POST" enctype="multipart/form-data" class="editor-container">
+        {% csrf_token %}
+        <input type="hidden" name="blocks_data" id="blocks_data" value="[]">
+
+        <!-- رأس المحرر -->
+        <div class="editor-header">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">معلومات المنشور</h2>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">املأ المعلومات الأساسية للمنشور</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-user ml-1"></i> {{ user.get_full_name|default:user.username }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- جسم المحرر -->
+        <div class="editor-body">
+            <!-- تبويبات -->
+            <div class="tab-container">
+                <button type="button" class="tab-btn active" data-tab="basic">
+                    <i class="fas fa-info-circle ml-2"></i> المعلومات الأساسية
+                </button>
+                <button type="button" class="tab-btn" data-tab="content">
+                    <i class="fas fa-align-left ml-2"></i> المحتوى
+                </button>
+                <button type="button" class="tab-btn" data-tab="seo">
+                    <i class="fas fa-search ml-2"></i> تحسين محركات البحث
+                </button>
+                <button type="button" class="tab-btn" data-tab="advanced">
+                    <i class="fas fa-cog ml-2"></i> الإعدادات المتقدمة
+                </button>
+            </div>
+
+            <!-- تبويب المعلومات الأساسية -->
+            <div id="basic-tab" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- العنوان -->
+                    <div class="form-group">
+                        <label for="id_title" class="form-label">
+                            <i class="fas fa-heading ml-1"></i> العنوان *
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="error-message">{{ form.title.errors }}</div>
+                        {% endif %}
+                        <div class="character-counter" id="title_counter"></div>
+                    </div>
+
+                    <!-- الفئة -->
+                    <div class="form-group">
+                        <label for="id_category" class="form-label">
+                            <i class="fas fa-folder ml-1"></i> الفئة *
+                        </label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <div class="error-message">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- الصورة الرئيسية -->
+                    <div class="form-group">
+                        <label for="id_featured_image" class="form-label">
+                            <i class="fas fa-image ml-1"></i> الصورة الرئيسية
+                        </label>
+                        <div class="relative">
+                            {{ form.featured_image }}
+                            <div class="mt-2">
+                                <div id="featured_image_preview" class="preview-box hidden">
+                                    <img id="featured_image_preview_img" class="image-preview" alt="معاينة الصورة">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">الصورة التي ستظهر في أعلى المنشور</p>
+                    </div>
+
+                    <!-- الصورة المصغرة -->
+                    <div class="form-group">
+                        <label for="id_image" class="form-label">
+                            <i class="fas fa-image ml-1"></i> الصورة المصغرة
+                        </label>
+                        <div class="relative">
+                            {{ form.image }}
+                            <div class="mt-2">
+                                <div id="image_preview" class="preview-box hidden">
+                                    <img id="image_preview_img" class="image-preview" alt="معاينة الصورة">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">الصورة التي ستظهر في قائمة المنشورات</p>
+                    </div>
+
+                    <!-- الحالة -->
+                    <div class="form-group">
+                        <label for="id_status" class="form-label">
+                            <i class="fas fa-circle ml-1"></i> حالة النشر
+                        </label>
+                        {{ form.status }}
+                    </div>
+
+                    <!-- تاريخ النشر -->
+                    <div class="form-group">
+                        <label for="id_publish_date" class="form-label">
+                            <i class="fas fa-calendar ml-1"></i> تاريخ النشر
+                        </label>
+                        {{ form.publish_date }}
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">اتركه فارغاً للنشر فورياً</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب المحتوى -->
+            <div id="content-tab" class="tab-content">
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- الملخص -->
+                    <div class="form-group">
+                        <label for="id_excerpt" class="form-label">
+                            <i class="fas fa-file-alt ml-1"></i> الملخص
+                        </label>
+                        {{ form.excerpt }}
+                        {% if form.excerpt.errors %}
+                        <div class="error-message">{{ form.excerpt.errors }}</div>
+                        {% endif %}
+                        <div class="character-counter" id="excerpt_counter"></div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">ملخص مختصر يظهر في صفحة العرض</p>
+                    </div>
+
+                    <!-- المحتوى الرئيسي -->
+                    <div class="form-group">
+                        <label for="id_content" class="form-label">
+                            <i class="fas fa-edit ml-1"></i> المحتوى *
+                        </label>
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                        <div class="error-message">{{ form.content.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- تبويب SEO -->
+            <div id="seo-tab" class="tab-content">
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- عنوان SEO -->
+                    <div class="form-group">
+                        <label for="id_seo_title" class="form-label">
+                            <i class="fas fa-search ml-1"></i> عنوان SEO
+                        </label>
+                        {{ form.seo_title }}
+                        <div class="character-counter" id="seo_title_counter"></div>
+                        <div class="preview-box mt-2">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">معاينة:</p>
+                            <p id="seo_title_preview" class="text-gray-900 dark:text-white font-medium"></p>
+                        </div>
+                    </div>
+
+                    <!-- وصف SEO -->
+                    <div class="form-group">
+                        <label for="id_seo_description" class="form-label">
+                            <i class="fas fa-search ml-1"></i> وصف SEO
+                        </label>
+                        {{ form.seo_description }}
+                        <div class="character-counter" id="seo_description_counter"></div>
+                        <div class="preview-box mt-2">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">معاينة:</p>
+                            <p id="seo_description_preview" class="text-gray-600 dark:text-gray-300"></p>
+                        </div>
+                    </div>
+
+                    <!-- كلمات مفتاحية -->
+                    <div class="form-group">
+                        <label for="id_seo_keywords" class="form-label">
+                            <i class="fas fa-tags ml-1"></i> الكلمات المفتاحية
+                        </label>
+                        {{ form.seo_keywords }}
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">افصل الكلمات بفواصل</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب الإعدادات المتقدمة -->
+            <div id="advanced-tab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- الرابط الخارجي -->
+                    <div class="form-group">
+                        <label for="id_link" class="form-label">
+                            <i class="fas fa-link ml-1"></i> رابط خارجي
+                        </label>
+                        {{ form.link }}
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">رابط خارجي للمنشور</p>
+                    </div>
+
+                    <!-- تأخير الرابط -->
+                    <div class="form-group">
+                        <label for="id_link_delay" class="form-label">
+                            <i class="fas fa-clock ml-1"></i> تأخير الرابط (ثواني)
+                        </label>
+                        {{ form.link_delay }}
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">وقت الانتظار قبل الانتقال للرابط</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div class="action-buttons">
+            <button type="submit" name="save_draft" class="btn-secondary">
+                <i class="fas fa-save ml-2"></i> حفظ كمسودة
+            </button>
+            <button type="submit" name="publish_now" class="btn-primary">
+                <i class="fas fa-paper-plane ml-2"></i> نشر الآن
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn-outline">
+                <i class="fas fa-times ml-2"></i> إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.ckeditor.com/4.16.2/full-all/ckeditor.js"></script>
+<script>
+    // تهيئة CKEditor
+    CKEDITOR.replace('id_content', {
+        language: 'ar',
+        height: 400,
+        toolbarGroups: [
+            { name: 'document', groups: ['mode', 'document', 'doctools'] },
+            { name: 'clipboard', groups: ['clipboard', 'undo'] },
+            { name: 'editing', groups: ['find', 'selection', 'spellchecker'] },
+            { name: 'forms' },
+            { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+            { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'] },
+            { name: 'links' },
+            { name: 'insert' },
+            { name: 'styles' },
+            { name: 'colors' },
+            { name: 'tools' },
+            { name: 'others' },
+            { name: 'about' }
+        ],
+        removeButtons: 'Save,NewPage,Preview,Print,Templates,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Outdent,Indent,CreateDiv,Blockquote,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,BidiLtr,BidiRtl,Language,Anchor,Flash,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Maximize,About',
+        extraPlugins: 'colorbutton,font,justify',
+        contentsCss: '{% static "css/ckeditor.css" %}'
+    });
+
+    // تبويبات الصفحة
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // إزالة النشاط من جميع الأزرار
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            // إخفاء جميع المحتويات
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // إضافة النشاط للزر المحدد
+            this.classList.add('active');
+            // إظهار المحتوى المحدد
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+
+    // عداد الأحرف
+    const charCounters = {
+        'id_title': 200,
+        'id_excerpt': 300,
+        'id_seo_title': 200,
+        'id_seo_description': 300
+    };
+
+    Object.keys(charCounters).forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        const counterId = `${fieldId}_counter`;
+        
+        if (field) {
+            field.addEventListener('input', function() {
+                const maxLength = charCounters[fieldId];
+                const currentLength = this.value.length;
+                const remaining = maxLength - currentLength;
+                const counter = document.getElementById(counterId);
+                
+                if (counter) {
+                    counter.textContent = `${currentLength}/${maxLength} حرف`;
+                    counter.classList.toggle('over-limit', remaining < 0);
+                    
+                    // تحديث المعاينة لـ SEO
+                    if (fieldId === 'id_seo_title') {
+                        document.getElementById('seo_title_preview').textContent = this.value || 'عنوان SEO';
+                    }
+                    if (fieldId === 'id_seo_description') {
+                        document.getElementById('seo_description_preview').textContent = this.value || 'وصف SEO';
+                    }
+                }
+                
+                // تغيير لون الحقل إذا تجاوز الحد
+                if (remaining < 0) {
+                    this.style.borderColor = '#ef4444';
+                    this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+                } else if (remaining < 10) {
+                    this.style.borderColor = '#f59e0b';
+                    this.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+                } else {
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                }
+            });
+            
+            // تحديث أولي
+            field.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // معاينة الصور
+    function previewImage(inputId, previewId, imgId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const img = document.getElementById(imgId);
+        
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                preview.classList.add('hidden');
+            }
+        });
+    }
+
+    // تهيئة معاينة الصور
+    previewImage('id_featured_image', 'featured_image_preview', 'featured_image_preview_img');
+    previewImage('id_image', 'image_preview', 'image_preview_img');
+
+    // نظام البلوكات
+    let blocks = [];
+    let blockCounter = 0;
+
+    function addTextBlock(content = '') {
+        const blockId = `block_${blockCounter++}`;
+        const block = {
+            id: blockId,
+            type: 'text',
+            content: content,
+            order: blocks.length
+        };
+        
+        blocks.push(block);
+        renderBlocks();
+        
+        // التركيز على الحقل الجديد
+        setTimeout(() => {
+            const textarea = document.querySelector(`#${blockId} textarea`);
+            if (textarea) textarea.focus();
+        }, 100);
+    }
+
+    function addImageBlock(imageUrl = '') {
+        const blockId = `block_${blockCounter++}`;
+        const block = {
+            id: blockId,
+            type: 'image',
+            content: imageUrl,
+            order: blocks.length
+        };
+        
+        blocks.push(block);
+        renderBlocks();
+    }
+
+    function updateBlock(id, content) {
+        const block = blocks.find(b => b.id === id);
+        if (block) {
+            block.content = content;
+            updateBlocksData();
+        }
+    }
+
+    function removeBlock(id) {
+        blocks = blocks.filter(b => b.id !== id);
+        // تحديث الترتيب
+        blocks.forEach((block, index) => {
+            block.order = index;
+        });
+        renderBlocks();
+    }
+
+    function moveBlockUp(id) {
+        const index = blocks.findIndex(b => b.id === id);
+        if (index > 0) {
+            [blocks[index], blocks[index-1]] = [blocks[index-1], blocks[index]];
+            blocks.forEach((block, i) => block.order = i);
+            renderBlocks();
+        }
+    }
+
+    function moveBlockDown(id) {
+        const index = blocks.findIndex(b => b.id === id);
+        if (index < blocks.length - 1) {
+            [blocks[index], blocks[index+1]] = [blocks[index+1], blocks[index]];
+            blocks.forEach((block, i) => block.order = i);
+            renderBlocks();
+        }
+    }
+
+    function renderBlocks() {
+        const container = document.getElementById('blocks_container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        blocks.sort((a, b) => a.order - b.order).forEach(block => {
+            const blockElement = document.createElement('div');
+            blockElement.className = 'block-item';
+            blockElement.id = block.id;
+            
+            if (block.type === 'text') {
+                blockElement.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-paragraph text-gray-500 dark:text-gray-400 ml-2"></i>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">كتلة نصية</span>
+                            </div>
+                            <textarea 
+                                class="form-control" 
+                                rows="4" 
+                                placeholder="اكتب محتوى الكتلة النصية هنا..."
+                                oninput="updateBlock('${block.id}', this.value)"
+                            >${block.content}</textarea>
+                        </div>
+                        <div class="flex flex-col gap-1 ml-2">
+                            <div class="block-handle cursor-move" title="اسحب للتغيير">
+                                <i class="fas fa-grip-vertical"></i>
+                            </div>
+                            <div class="block-actions">
+                                <button type="button" onclick="moveBlockUp('${block.id}')" class="btn-icon bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" title="نقل لأعلى">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <button type="button" onclick="moveBlockDown('${block.id}')" class="btn-icon bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" title="نقل لأسفل">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                                <button type="button" onclick="removeBlock('${block.id}')" class="btn-icon bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (block.type === 'image') {
+                blockElement.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-image text-gray-500 dark:text-gray-400 ml-2"></i>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">كتلة صورة</span>
+                            </div>
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                class="form-control"
+                                onchange="handleImageUpload('${block.id}', this)"
+                            >
+                            ${block.content ? `
+                                <div class="mt-2">
+                                    <img src="${block.content}" class="image-preview" alt="معاينة الصورة">
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex flex-col gap-1 ml-2">
+                            <div class="block-handle cursor-move" title="اسحب للتغيير">
+                                <i class="fas fa-grip-vertical"></i>
+                            </div>
+                            <div class="block-actions">
+                                <button type="button" onclick="moveBlockUp('${block.id}')" class="btn-icon bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" title="نقل لأعلى">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <button type="button" onclick="moveBlockDown('${block.id}')" class="btn-icon bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300" title="نقل لأسفل">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                                <button type="button" onclick="removeBlock('${block.id}')" class="btn-icon bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(blockElement);
+        });
+        
+        updateBlocksData();
+    }
+
+    function handleImageUpload(blockId, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                updateBlock(blockId, e.target.result);
+                renderBlocks();
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function updateBlocksData() {
+        const blocksData = blocks.map(block => ({
+            id: block.id,
+            type: block.type,
+            content: block.content,
+            order: block.order
+        }));
+        
+        document.getElementById('blocks_data').value = JSON.stringify(blocksData);
+    }
+
+    // إضافة Drag & Drop للبلوكات
+    let draggedBlock = null;
+
+    function initDragAndDrop() {
+        const container = document.getElementById('blocks_container');
+        if (!container) return;
+
+        container.addEventListener('dragstart', function(e) {
+            if (e.target.classList.contains('block-handle') || e.target.closest('.block-handle')) {
+                draggedBlock = e.target.closest('.block-item');
+                if (draggedBlock) {
+                    draggedBlock.classList.add('opacity-50');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            }
+        });
+
+        container.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        container.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (draggedBlock) {
+                draggedBlock.classList.remove('opacity-50');
+                
+                const afterElement = getDragAfterElement(container, e.clientY);
+                const draggedId = draggedBlock.id;
+                
+                // إزالة البلوك من المصفوفة
+                const draggedIndex = blocks.findIndex(b => b.id === draggedId);
+                const draggedBlockData = blocks[draggedIndex];
+                blocks.splice(draggedIndex, 1);
+                
+                // إيجاد الموضع الجديد
+                let newIndex;
+                if (afterElement == null) {
+                    newIndex = blocks.length;
+                } else {
+                    newIndex = blocks.findIndex(b => b.id === afterElement.id);
+                }
+                
+                // إعادة إدراج البلوك
+                blocks.splice(newIndex, 0, draggedBlockData);
+                
+                // تحديث الترتيب
+                blocks.forEach((block, index) => block.order = index);
+                renderBlocks();
+                
+                draggedBlock = null;
+            }
+        });
+
+        container.addEventListener('dragend', function() {
+            if (draggedBlock) {
+                draggedBlock.classList.remove('opacity-50');
+                draggedBlock = null;
+            }
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.block-item:not(.opacity-50)')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // تحقق من النموذج قبل الإرسال
+    document.getElementById('postForm').addEventListener('submit', function(e) {
+        // التحقق من العنوان
+        const title = document.getElementById('id_title').value.trim();
+        if (!title) {
+            e.preventDefault();
+            alert('الرجاء إدخال عنوان للمنشور');
+            document.getElementById('id_title').focus();
+            return;
+        }
+        
+        // التحقق من الفئة
+        const category = document.getElementById('id_category').value;
+        if (!category) {
+            e.preventDefault();
+            alert('الرجاء اختيار فئة للمنشور');
+            document.getElementById('id_category').focus();
+            return;
+        }
+        
+        // تحديث بيانات البلوكات قبل الإرسال
+        updateBlocksData();
+    });
+
+    // تهيئة عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        // تهيئة السحب والإفلات
+        initDragAndDrop();
+        
+        // تهيئة معاينة SEO
+        document.getElementById('id_seo_title').dispatchEvent(new Event('input'));
+        document.getElementById('id_seo_description').dispatchEvent(new Event('input'));
+        
+        // إضافة بعض البلوكات الافتراضية إذا كان المستخدم جديد
+        if (blocks.length === 0) {
+            addTextBlock('ابدأ بكتابة محتوى رائع هنا...');
+        }
+    });
+</script>
+{% endblock %}

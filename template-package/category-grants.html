@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنح والتدريبات - كنوز</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- الملفات الخاصة بالمشروع -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/categories.css">
+    
+    <style>
+        .grants-header {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 0.9) 100%);
+        }
+        .dark .grants-header {
+            background: linear-gradient(135deg, rgba(180, 83, 9, 0.9) 0%, rgba(217, 119, 6, 0.9) 100%);
+        }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .grant-card { animation: slideIn 0.5s ease-out; }
+        .grant-card:nth-child(2) { animation-delay: 0.1s; }
+        .grant-card:nth-child(3) { animation-delay: 0.2s; }
+        .grant-card:nth-child(4) { animation-delay: 0.3s; }
+        .grant-card:nth-child(5) { animation-delay: 0.4s; }
+        .grant-card:nth-child(6) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- شريط التنقل -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2"><img src="https://via.placeholder.com/64x64" class="h-16" alt="Logo"></a>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link">الرئيسية</a>
+                <a href="category-courses.html" class="nav-link">الكورسات</a>
+                <a href="category-articles.html" class="nav-link">المقالات</a>
+                <a href="category-grants.html" class="nav-link text-yellow-600 dark:text-yellow-400">المنح</a>
+                <a href="category-books.html" class="nav-link">الكتب</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 focus:outline-none">
+                        <div class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">أ</div>
+                        <span class="text-gray-700 dark:text-gray-300">أحمد</span>
+                        <i class="fas fa-chevron-down text-gray-500 dark:text-gray-400 text-sm"></i>
+                    </button>
+                    <div id="user-menu" class="absolute left-0 mt-3 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-2xl py-2 border border-gray-100 dark:border-gray-700 opacity-0 invisible scale-95 transition-all duration-200 origin-top-right z-50">
+                        <a href="dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم</a>
+                        <a href="create-post.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-plus-circle ml-2"></i> إنشاء منشور</a>
+                        <div class="border-t my-2 dark:border-gray-700"></div>
+                        <form action="#" method="post"><button type="submit" class="block w-full text-right px-4 py-2 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج</button></form>
+                    </div>
+                </div>
+            </div>
+            <button class="md:hidden text-xl" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- الهيدر -->
+    <section class="grants-header text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">المنح والتدريبات</h1>
+                    <p class="text-xl opacity-90">فرص منح دراسية وتدريبات عملية حول العالم</p>
+                </div>
+                <a href="create-post.html" class="mt-4 md:mt-0 inline-flex items-center bg-white text-orange-600 px-6 py-3 rounded-lg hover:bg-gray-100 font-bold transition duration-300 shadow-lg"><i class="fas fa-plus-circle mr-2"></i> إضافة فرصة جديدة</a>
+            </div>
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">12</div><div class="opacity-90 text-sm">فرصة قريبة</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">18</div><div class="opacity-90 text-sm">تدريب مجاني</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">23</div><div class="opacity-90 text-sm">منحة ممولة</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">35</div><div class="opacity-90 text-sm">فرصة متاحة</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- معلومات مهمة -->
+    <section class="py-8 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center"><div class="w-10 h-10 bg-orange-100 dark:bg-orange-800/30 rounded-full flex items-center justify-center ml-4"><i class="fas fa-exclamation-circle text-orange-600 dark:text-orange-400"></i></div><p class="text-orange-800 dark:text-orange-300 font-medium">المواعيد النهائية للتقديم قريبة، لا تضيع الفرصة!</p></div>
+                <div class="flex items-center space-x-3">
+                    <div class="text-center"><div class="text-2xl font-bold text-orange-600">12</div><div class="text-orange-700 text-sm">فرصة قريبة</div></div>
+                    <div class="text-center"><div class="text-2xl font-bold text-orange-600">18</div><div class="text-orange-700 text-sm">تدريب مجاني</div></div>
+                    <div class="text-center"><div class="text-2xl font-bold text-orange-600">23</div><div class="text-orange-700 text-sm">منحة ممولة</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- البحث والتصفية -->
+    <section class="py-8 bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-grow"><form method="get" class="relative"><input type="text" name="q" placeholder="ابحث عن منحة أو تدريب..." class="w-full px-4 py-3 pl-12 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"><div class="absolute right-3 top-3 text-gray-400"><i class="fas fa-search"></i></div></form></div>
+                <div class="flex flex-wrap gap-2">
+                    <select name="type" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="">نوع الفرصة</option>
+                        <option value="scholarship">منحة دراسية</option>
+                        <option value="training">تدريب عملي</option>
+                        <option value="fellowship">زمالة بحثية</option>
+                    </select>
+                    <select name="sort" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="deadline">الموعد النهائي</option>
+                        <option value="newest">الأحدث</option>
+                        <option value="funding">مستوى التمويل</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-2">
+                <a href="#" class="bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-medium">جميع الفرص</a>
+                <a href="#" class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-4 py-2 rounded-full text-sm font-medium">منح دراسية</a>
+                <a href="#" class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-4 py-2 rounded-full text-sm font-medium">تدريبات عملية</a>
+                <a href="#" class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-4 py-2 rounded-full text-sm font-medium">زمالات بحثية</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- المنح المميزة -->
+    <section class="py-12 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center"><i class="fas fa-crown text-yellow-500 mr-2"></i> فرص مميزة</h2>
+                    <span class="text-sm text-gray-500 dark:text-gray-400 bg-yellow-100 dark:bg-yellow-900/30 px-3 py-1 rounded-full">الأكثر طلباً</span>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 border-2 border-yellow-300 dark:border-yellow-600">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex flex-wrap gap-2"><span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 text-xs font-bold px-3 py-1.5 rounded-full">منحة دراسية</span><span class="bg-red-100 dark:bg-red-900/30 text-red-800 text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-clock ml-1"></i> 2024/03/15</span></div>
+                                <span class="bg-green-100 dark:bg-green-900/30 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-check-circle ml-1"></i> ممولة بالكامل</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3"><a href="post-detail.html" class="hover:text-orange-600 transition">منحة جامعة هارفارد للدراسات العليا</a></h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">فرصة مميزة للدراسة في جامعة هارفارد مع تغطية كاملة للرسوم الدراسية والمصاريف المعيشية.</p>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="flex items-center text-gray-500 text-sm flex-wrap gap-3"><div class="flex items-center"><i class="fas fa-globe ml-2 text-orange-500"></i><span>دولي</span></div><div class="flex items-center"><i class="fas fa-graduation-cap ml-2 text-orange-500"></i><span>ماجستير ودكتوراه</span></div></div><a href="post-detail.html" class="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-5 py-2.5 rounded-lg hover:opacity-90 font-medium">التقديم الآن <i class="fas fa-arrow-left mr-1"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center"><i class="fas fa-list mr-2 text-orange-500"></i> جميع الفرص المتاحة <span class="text-sm text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full mr-3">35 فرصة</span></h2>
+                    <div class="flex items-center space-x-3"><span class="text-gray-600 text-sm">ترتيب حسب:</span><select class="px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg text-sm"><option value="deadline">الموعد النهائي</option><option value="newest">الأحدث</option><option value="funding">مستوى التمويل</option></select></div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="grant-card bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="md:flex justify-between items-start gap-6">
+                            <div class="md:w-3/4"><div class="flex flex-wrap gap-2 mb-3"><span class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 text-xs font-bold px-3 py-1.5 rounded-full">منحة دراسية</span><span class="bg-green-100 dark:bg-green-900/30 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-check-circle ml-1"></i> ممولة بالكامل</span><span class="bg-red-100 dark:bg-red-900/30 text-red-800 text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-bolt ml-1"></i> عاجل</span></div><h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2"><a href="post-detail.html" class="hover:text-orange-600 transition">منحة جامعة ستانفورد للبكالوريوس</a></h3><p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">فرصة للدراسة في جامعة ستانفورد مع تغطية كاملة للرسوم والمصاريف.</p><div class="flex flex-wrap gap-4 text-gray-500 text-sm"><div class="flex items-center"><i class="fas fa-globe ml-2 text-orange-500"></i> دولي</div><div class="flex items-center"><i class="fas fa-clock ml-2 text-orange-500"></i> الموعد: 2024/03/15</div><div class="flex items-center"><i class="fas fa-user-graduate ml-2 text-orange-500"></i> بكالوريوس</div></div></div>
+                            <div class="md:w-1/4 mt-4 md:mt-0 md:text-right"><div class="mb-4"><div class="text-2xl font-bold text-orange-600">1,234</div><div class="text-gray-500 text-sm">مشاهدة</div></div><div class="space-y-2"><a href="post-detail.html" class="block w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2.5 rounded-lg hover:opacity-90 font-medium text-center">تفاصيل الفرصة</a><button class="w-full bg-white dark:bg-gray-700 border border-orange-600 text-orange-600 px-4 py-2.5 rounded-lg hover:bg-orange-50 font-medium text-center text-sm"><i class="fas fa-external-link-alt mr-1"></i> التقديم</button></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- الترقيم -->
+                <div class="mt-12">
+                    <nav class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        <div class="text-gray-600 dark:text-gray-400 text-sm">عرض 1 إلى 6 من أصل 35 فرصة</div>
+                        <div class="flex items-center space-x-2">
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
+                            <span class="px-3 py-2 bg-orange-600 text-white rounded-lg font-medium">1</span>
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">2</a>
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">3</a>
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">4</a>
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">5</a>
+                            <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- نصائح للتقديم -->
+    <section class="py-12 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">نصائح للتقديم الناجح</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"><div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4"><i class="fas fa-file-alt text-blue-600 text-xl"></i></div><h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3">إعداد المستندات</h3><p class="text-gray-600 dark:text-gray-400 text-sm">جهز سيرة ذاتية حديثة، خطابات توصية، وشهاداتك الأكاديمية قبل التقديم بوقت كافٍ.</p></div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"><div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4"><i class="fas fa-clock text-green-600 text-xl"></i></div><h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3">المواعيد النهائية</h3><p class="text-gray-600 dark:text-gray-400 text-sm">لا تنتظر حتى آخر لحظة، قدم طلباتك قبل الموعد النهائي بوقت كافٍ لتجنب أي مشاكل.</p></div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-4"><i class="fas fa-edit text-purple-600 text-xl"></i></div><h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3">رسالة الدافع</h3><p class="text-gray-600 dark:text-gray-400 text-sm">اكتب رسالة دافع قوية تبرز فيها إنجازاتك وأهدافك المستقبلية بشكل واضح ومختصر.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الأزرار الثابتة -->
+    <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i><span class="tooltip">الوضع الداكن</span></button>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i><span class="tooltip">العودة للأعلى</span></button>
+
+    <div id="loading-overlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-[100] flex items-center justify-center transition-opacity duration-500"><div class="text-center"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div><p class="mt-4">جاري التحميل...</p></div></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script>AOS.init({ duration: 1000, once: true });</script>
+</body>
+</html>

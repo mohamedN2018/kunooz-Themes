@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الكتب والملخصات - كنوز</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- الملفات الخاصة بالمشروع -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/categories.css">
+    
+    <style>
+        .books-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(109, 40, 217, 0.9) 100%);
+        }
+        .dark .books-header {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(109, 40, 217, 0.9) 100%);
+        }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- شريط التنقل -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2"><img src="https://via.placeholder.com/64x64" class="h-16" alt="Logo"></a>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link">الرئيسية</a>
+                <a href="category-courses.html" class="nav-link">الكورسات</a>
+                <a href="category-articles.html" class="nav-link">المقالات</a>
+                <a href="category-grants.html" class="nav-link">المنح</a>
+                <a href="category-books.html" class="nav-link text-purple-600 dark:text-purple-400">الكتب</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 focus:outline-none">
+                        <div class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">أ</div>
+                        <span class="text-gray-700 dark:text-gray-300">أحمد</span>
+                        <i class="fas fa-chevron-down text-gray-500 dark:text-gray-400 text-sm"></i>
+                    </button>
+                    <div id="user-menu" class="absolute left-0 mt-3 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-2xl py-2 border border-gray-100 dark:border-gray-700 opacity-0 invisible scale-95 transition-all duration-200 origin-top-right z-50">
+                        <a href="dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم</a>
+                        <a href="create-post.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-plus-circle ml-2"></i> إنشاء منشور</a>
+                        <div class="border-t my-2 dark:border-gray-700"></div>
+                        <form action="#" method="post"><button type="submit" class="block w-full text-right px-4 py-2 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج</button></form>
+                    </div>
+                </div>
+            </div>
+            <button class="md:hidden text-xl" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- الهيدر -->
+    <section class="books-header text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">الكتب والملخصات</h1>
+                    <p class="text-xl opacity-90">مكتبة تعليمية شاملة من الكتب والملخصات المفيدة</p>
+                </div>
+                <a href="create-post.html" class="mt-4 md:mt-0 inline-flex items-center bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 font-bold transition duration-300 shadow-lg"><i class="fas fa-plus-circle mr-2"></i> إضافة كتاب جديد</a>
+            </div>
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">21</div><div class="opacity-90 text-sm">كتاب متاح</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">8</div><div class="opacity-90 text-sm">ملخص تعليمي</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">5,678</div><div class="opacity-90 text-sm">تحميل</div></div>
+                <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition"><div class="text-2xl font-bold">12</div><div class="opacity-90 text-sm">مؤلف</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- البحث والتصفية -->
+    <section class="py-8 bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-grow"><form method="get" class="relative"><input type="text" name="q" placeholder="ابحث عن كتاب أو ملخص..." class="w-full px-4 py-3 pl-12 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><div class="absolute right-3 top-3 text-gray-400"><i class="fas fa-search"></i></div></form></div>
+                <div class="flex flex-wrap gap-2">
+                    <select name="type" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700">
+                        <option value="">النوع</option>
+                        <option value="book">كتاب كامل</option>
+                        <option value="summary">ملخص فقط</option>
+                    </select>
+                    <select name="category" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700">
+                        <option value="">جميع التصنيفات</option>
+                        <option value="1">برمجة (8)</option>
+                        <option value="2">أعمال (6)</option>
+                        <option value="3">تنمية ذاتية (7)</option>
+                    </select>
+                    <select name="sort" class="px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700">
+                        <option value="newest">الأحدث</option>
+                        <option value="downloads">الأكثر تحميلاً</option>
+                        <option value="popular">الأكثر مشاهدة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-2">
+                <a href="#" class="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium">جميع الكتب</a>
+                <a href="#" class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200">الأكثر تحميلاً</a>
+                <a href="#" class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200">حديثة الإضافة</a>
+                <a href="#" class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200">كتب كاملة</a>
+                <a href="#" class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200">ملخصات</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- الكتب والملخصات -->
+    <section class="py-12 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="text-gray-700 dark:text-gray-300"><span class="font-medium">النتائج:</span> <span class="text-purple-600 dark:text-purple-400">29</span> كتاب/ملخص</div>
+                    <div class="flex items-center space-x-2 mt-2 md:mt-0"><span class="text-gray-600 dark:text-gray-400 text-sm">عرض:</span><div class="flex space-x-1"><button class="p-2 rounded-lg bg-purple-100 dark:bg-purple-800 text-purple-600"><i class="fas fa-th-large"></i></button><button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600"><i class="fas fa-list"></i></button></div></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- كتاب 1 -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
+                    <div class="relative overflow-hidden">
+                        <div class="w-full h-52 bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center"><i class="fas fa-book text-white text-5xl"></i></div>
+                        <div class="absolute top-3 left-3"><span class="bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow"><i class="fas fa-book ml-1"></i> كتاب كامل</span></div>
+                        <div class="absolute top-3 right-3"><span class="bg-white dark:bg-gray-700 text-purple-600 text-xs font-bold px-3 py-1.5 rounded-full shadow"><i class="fas fa-download ml-1"></i> 1,234</span></div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2 leading-tight line-clamp-2"><a href="post-detail.html" class="hover:text-purple-600 transition">دليل تعلم بايثون من الصفر</a></h3>
+                        <div class="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-3"><i class="fas fa-user-edit ml-2 text-purple-500"></i><span>أحمد محمد</span></div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">دليل شامل لتعلم لغة بايثون للمبتدئين مع أمثلة عملية وتمارين.</p>
+                        <div class="mb-4"><span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium px-3 py-1.5 rounded">برمجة</span></div>
+                        <div class="flex justify-between items-center text-gray-500 text-sm mb-4"><div class="flex items-center"><i class="fas fa-calendar ml-2"></i><span>2024/01/20</span></div><div class="flex items-center"><i class="fas fa-clock ml-2"></i><span>30 ثانية</span></div></div>
+                        <div class="flex space-x-2"><a href="post-detail.html" class="flex-grow bg-purple-600 hover:bg-purple-700 text-white text-center py-2.5 rounded-lg text-sm font-medium"><i class="fas fa-eye mr-1"></i> معاينة</a><button class="bg-white dark:bg-gray-700 border border-purple-600 text-purple-600 px-4 rounded-lg hover:bg-purple-50"><i class="fas fa-download"></i></button></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الترقيم -->
+            <div class="mt-12">
+                <nav class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="text-gray-600 dark:text-gray-400 text-sm">عرض 1 إلى 8 من أصل 29 كتاب/ملخص</div>
+                    <div class="flex items-center space-x-2">
+                        <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
+                        <span class="px-3 py-2 bg-purple-600 text-white rounded-lg font-medium">1</span>
+                        <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 hover:bg-gray-50">2</a>
+                        <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 hover:bg-gray-50">3</a>
+                        <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 hover:bg-gray-50">4</a>
+                        <a href="#" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- الأزرار الثابتة -->
+    <button class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-moon"></i><span class="tooltip">الوضع الداكن</span></button>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i><span class="tooltip">العودة للأعلى</span></button>
+
+    <div id="loading-overlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-[100] flex items-center justify-center transition-opacity duration-500"><div class="text-center"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div><p class="mt-4">جاري التحميل...</p></div></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script>AOS.init({ duration: 1000, once: true });</script>
+</body>
+</html>
