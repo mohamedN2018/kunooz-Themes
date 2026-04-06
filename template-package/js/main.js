@@ -1,38 +1,127 @@
 /**
  * الملف الرئيسي للوظائف العامة
- * يشمل: Dark Mode, Mobile Menu, Back to Top, Loading Overlay, GSAP
+ * يشمل: Dark Mode, Mobile Menu, Back to Top, Loading Overlay
  */
 
-// ========================
-// 1. إخفاء شاشة التحميل (Loading Overlay) - حل قوي
-// ========================
-(function hideLoadingOverlay() {
-    const overlay = document.getElementById('loading-overlay');
-    if (!overlay) return;
-
-    function hideOverlay() {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.5s ease-out';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 500);
-    }
-
-    if (document.readyState === 'complete') {
-        hideOverlay();
-    } else {
-        window.addEventListener('load', hideOverlay);
-    }
-
-    // Fallback بعد 2 ثانية
-    setTimeout(hideOverlay, 2000);
-})();
-
-// ========================
-// 2. انتظار تحميل DOM
-// ========================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ main.js loaded successfully');
+
+    // ========================
+    // 1. إخفاء شاشة التحميل (Loading Overlay)
+    // ========================
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        setTimeout(function() {
+            loadingOverlay.style.opacity = '0';
+            setTimeout(function() {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        }, 100);
+
+        setTimeout(function() {
+            if (loadingOverlay.style.display !== 'none') {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(function() {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
+        }, 2000);
+    }
+
+    // ========================
+    // 2. نظام Dark Mode (الإصلاح الكامل)
+    // ========================
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const htmlElement = document.documentElement;
+
+    // دالة لضبط الثيم على جميع العناصر
+    function applyTheme(theme) {
+        const isDark = theme === 'dark';
+
+        // تطبيق على عنصر html
+        if (isDark) {
+            htmlElement.classList.add('dark');
+            // تحديث أيقونة الزر
+            if (darkModeToggle) {
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span class="tooltip hidden md:inline-block absolute right-14 bg-gray-800 text-white text-xs px-2 py-1 rounded">الوضع الفاتح</span>';
+            }
+        } else {
+            htmlElement.classList.remove('dark');
+            // تحديث أيقونة الزر
+            if (darkModeToggle) {
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span class="tooltip hidden md:inline-block absolute right-14 bg-gray-800 text-white text-xs px-2 py-1 rounded">الوضع الداكن</span>';
+            }
+        }
+
+        // حفظ في localStorage
+        localStorage.setItem('theme', theme);
+
+        // حفظ في cookie (للتأكد من استمرارية الثيم)
+        document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+
+        // تطبيق الثيم على جميع العناصر الديناميكية
+        document.body.classList.toggle('dark-mode-transition', isDark);
+
+        console.log(`🌓 Theme changed to: ${theme}`);
+    }
+
+    // دالة لتهيئة الثيم
+    function initTheme() {
+        // محاولة القراءة من localStorage أولاً
+        let savedTheme = localStorage.getItem('theme');
+
+        // إذا لم يوجد، حاول القراءة من cookie
+        if (!savedTheme) {
+            const cookieMatch = document.cookie.match(/theme=([^;]+)/);
+            if (cookieMatch) {
+                savedTheme = cookieMatch[1];
+            }
+        }
+
+        // إذا كان هناك ثيم محفوظ، استخدمه
+        if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+            applyTheme(savedTheme);
+        }
+        // وإلا استخدم تفضيلات النظام
+        else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+    }
+
+    // ربط حدث النقر على زر الدارك مود
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const isDark = htmlElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+
+            // تأثير حركة جميل
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    rotation: 360,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        gsap.set(this, {
+                            rotation: 0
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // الاستماع لتغيرات تفضيلات النظام
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // فقط إذا لم يكن هناك ثيم محفوظ
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+
+    // تهيئة الثيم عند تحميل الصفحة
+    initTheme();
 
     // ========================
     // 3. القائمة الجانبية (Mobile Menu)
@@ -58,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeMobileMenu) closeMobileMenu.addEventListener('click', closeMobileMenuFunc);
     if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenuFunc);
 
-    // إغلاق القائمة بالضغط على Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeMobileMenuFunc();
     });
@@ -101,50 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================
-    // 6. نظام الوضع الداكن (Dark Mode)
-    // ========================
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const htmlElement = document.documentElement;
-
-    function setTheme(theme) {
-        const isDark = theme === 'dark';
-        if (isDark) {
-            htmlElement.classList.add('dark');
-            if (darkModeToggle) {
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span class="tooltip hidden md:inline-block absolute right-14 bg-gray-800 text-white text-xs px-2 py-1 rounded">الوضع الفاتح</span>';
-            }
-            localStorage.setItem('theme', 'dark');
-            document.cookie = "theme=dark; path=/; max-age=31536000";
-        } else {
-            htmlElement.classList.remove('dark');
-            if (darkModeToggle) {
-                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span class="tooltip hidden md:inline-block absolute right-14 bg-gray-800 text-white text-xs px-2 py-1 rounded">الوضع الداكن</span>';
-            }
-            localStorage.setItem('theme', 'light');
-            document.cookie = "theme=light; path=/; max-age=31536000";
-        }
-    }
-
-    function initTheme() {
-        const storedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (storedTheme) {
-            setTheme(storedTheme);
-        } else {
-            setTheme(prefersDark ? 'dark' : 'light');
-        }
-    }
-
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', function() {
-            const isDark = htmlElement.classList.contains('dark');
-            setTheme(isDark ? 'light' : 'dark');
-        });
-    }
-    initTheme();
-
-    // ========================
-    // 7. القائمة المنسدلة للمستخدم
+    // 6. القائمة المنسدلة للمستخدم
     // ========================
     const userMenuBtn = document.getElementById('user-menu-btn');
     const userMenu = document.getElementById('user-menu');
@@ -165,17 +210,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================
-    // 8. GSAP Animations (إذا كانت موجودة)
+    // 7. GSAP Animations (إذا كانت موجودة)
     // ========================
     if (typeof gsap !== 'undefined') {
-        // حركة الناف بار
         gsap.from('nav', {
             duration: 0.8,
             y: -50,
             opacity: 0
         });
 
-        // تأثير hover على الأزرار
         const floatingButtons = [darkModeToggle, backToTopBtn];
         floatingButtons.forEach(btn => {
             if (btn) {
@@ -192,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================
-    // 9. تحسين الصور (Lazy Loading)
+    // 8. تحسين الصور (Lazy Loading)
     // ========================
     const images = document.querySelectorAll('img:not([loading])');
     images.forEach(img => {
@@ -200,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ========================
-    // 10. AOS Animation
+    // 9. AOS Animation
     // ========================
     if (typeof AOS !== 'undefined') {
         AOS.init({
@@ -209,11 +252,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ========================
-    // 11. إصلاح مشكلة الـ tooltip
-    // ========================
-    const tooltips = document.querySelectorAll('.tooltip');
-    tooltips.forEach(tooltip => {
-        tooltip.classList.add('hidden', 'md:inline-block');
-    });
+    console.log('✅ All systems initialized');
 });

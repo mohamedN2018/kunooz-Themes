@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الكتل - محرر المحتوى المتقدم</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        
+        .inline-group {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .dark .inline-group {
+            background: #1f2937;
+        }
+        
+        .inline-related {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .dark .inline-related {
+            background: #374151;
+            border-color: #4b5563;
+        }
+        
+        .inline-related:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .dark .inline-related:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .empty-form {
+            display: none;
+        }
+        
+        .form-row {
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .dark .form-row label {
+            color: #e5e7eb;
+        }
+        
+        .form-row input, 
+        .form-row textarea, 
+        .form-row select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .dark .form-row input,
+        .dark .form-row textarea,
+        .dark .form-row select {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        
+        .form-row input:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        
+        .readonly {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 8px;
+            color: #6b7280;
+        }
+        
+        .dark .readonly {
+            background: #1f2937;
+            color: #9ca3af;
+        }
+        
+        .errors {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+        }
+        
+        .help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        .dark .help {
+            color: #9ca3af;
+        }
+        
+        .field-box {
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-row input {
+            width: auto;
+        }
+        
+        .checkbox-row label {
+            margin-bottom: 0;
+        }
+        
+        .module {
+            margin-bottom: 30px;
+        }
+        
+        .module h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+            color: #1f2937;
+        }
+        
+        .dark .module h2 {
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        
+        .description {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .dark .description {
+            background: #1e3a5f;
+        }
+        
+        .items {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+        
+        .drag-handle {
+            cursor: move;
+            color: #9ca3af;
+            margin-left: 10px;
+        }
+        
+        .drag-handle:hover {
+            color: #3b82f6;
+        }
+        
+        .block-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .block-type-text {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .block-type-image {
+            background: #f3e8ff;
+            color: #6b21a5;
+        }
+        
+        .dark .block-type-text {
+            background: #1e3a5f;
+            color: #93c5fd;
+        }
+        
+        .dark .block-type-image {
+            background: #4c1d95;
+            color: #c4b5fd;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Inline Group -->
+        <div class="inline-group" id="blocks-group">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-layer-group text-blue-500"></i>
+                كتل المحتوى (Content Blocks)
+            </h2>
+            
+            <!-- Management Form (hidden) -->
+            <input type="hidden" name="blocks-TOTAL_FORMS" value="3" id="id_blocks-TOTAL_FORMS">
+            <input type="hidden" name="blocks-INITIAL_FORMS" value="2" id="id_blocks-INITIAL_FORMS">
+            <input type="hidden" name="blocks-MIN_NUM_FORMS" value="0" id="id_blocks-MIN_NUM_FORMS">
+            <input type="hidden" name="blocks-MAX_NUM_FORMS" value="1000" id="id_blocks-MAX_NUM_FORMS">
+            
+            <!-- Non-form errors -->
+            <div class="errors hidden" id="non-form-errors"></div>
+            
+            <!-- Items Container -->
+            <div class="items" id="blocks-items">
+                <!-- Block 1 - Text Block -->
+                <div class="inline-related" id="blocks-0">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-grip-vertical drag-handle cursor-move"></i>
+                            <span class="block-type-badge block-type-text">
+                                <i class="fas fa-paragraph ml-1"></i> كتلة نصية
+                            </span>
+                        </div>
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeBlock(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <fieldset class="module aligned">
+                        <div class="form-row field-order">
+                            <label><i class="fas fa-sort-numeric-down ml-1"></i> الترتيب:</label>
+                            <input type="number" name="blocks-0-order" value="0" class="vIntegerField">
+                        </div>
+                        
+                        <div class="form-row field-block_type">
+                            <label><i class="fas fa-tag ml-1"></i> نوع الكتلة:</label>
+                            <select name="blocks-0-block_type">
+                                <option value="text" selected>نص</option>
+                                <option value="image">صورة</option>
+                                <option value="video">فيديو</option>
+                                <option value="quote">اقتباس</option>
+                                <option value="code">كود</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row field-text">
+                            <label><i class="fas fa-align-left ml-1"></i> محتوى النص:</label>
+                            <textarea name="blocks-0-text" rows="5" placeholder="اكتب محتوى الكتلة النصية هنا...">مقدمة في تعلم الآلة: تعلم الآلة هو مجال فرعي من الذكاء الاصطناعي يهدف إلى تطوير خوارزميات ونماذج تمكن الحواسيب من التعلم من البيانات وتحسين أدائها مع مرور الوقت.</textarea>
+                            <div class="help">يمكنك استخدام HTML لتنسيق النص</div>
+                        </div>
+                        
+                        <div class="form-row field-image">
+                            <label><i class="fas fa-image ml-1"></i> الصورة:</label>
+                            <input type="file" name="blocks-0-image" accept="image/*">
+                            <div class="help">يُفضل استخدام صور بحجم 800×400 بكسل</div>
+                        </div>
+                        
+                        <div class="form-row field-video_url">
+                            <label><i class="fas fa-video ml-1"></i> رابط الفيديو:</label>
+                            <input type="url" name="blocks-0-video_url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        
+                        <div class="form-row field-settings">
+                            <label><i class="fas fa-cog ml-1"></i> إعدادات إضافية:</label>
+                            <textarea name="blocks-0-settings" rows="2" placeholder='{"class": "highlight", "align": "center"}'></textarea>
+                            <div class="help">إعدادات JSON إضافية للكتلة</div>
+                        </div>
+                        
+                        <input type="hidden" name="blocks-0-id" value="1">
+                        <input type="hidden" name="blocks-0-post" value="5">
+                    </fieldset>
+                </div>
+                
+                <!-- Block 2 - Image Block -->
+                <div class="inline-related" id="blocks-1">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-grip-vertical drag-handle cursor-move"></i>
+                            <span class="block-type-badge block-type-image">
+                                <i class="fas fa-image ml-1"></i> كتلة صورة
+                            </span>
+                        </div>
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeBlock(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <fieldset class="module aligned">
+                        <div class="form-row field-order">
+                            <label><i class="fas fa-sort-numeric-down ml-1"></i> الترتيب:</label>
+                            <input type="number" name="blocks-1-order" value="1" class="vIntegerField">
+                        </div>
+                        
+                        <div class="form-row field-block_type">
+                            <label><i class="fas fa-tag ml-1"></i> نوع الكتلة:</label>
+                            <select name="blocks-1-block_type">
+                                <option value="text">نص</option>
+                                <option value="image" selected>صورة</option>
+                                <option value="video">فيديو</option>
+                                <option value="quote">اقتباس</option>
+                                <option value="code">كود</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row field-text">
+                            <label><i class="fas fa-align-left ml-1"></i> محتوى النص:</label>
+                            <textarea name="blocks-1-text" rows="3" placeholder="وصف الصورة...">رسم بياني يوضح تطور الذكاء الاصطناعي</textarea>
+                        </div>
+                        
+                        <div class="form-row field-image">
+                            <label><i class="fas fa-image ml-1"></i> الصورة:</label>
+                            <input type="file" name="blocks-1-image" accept="image/*">
+                            <div class="help">يُفضل استخدام صور بحجم 800×400 بكسل</div>
+                            <div class="mt-2">
+                                <img src="assets/images/ai-chart.jpg" class="max-h-32 rounded" alt="الصورة الحالية">
+                                <p class="text-xs text-gray-500 mt-1">الصورة الحالية: ai-chart.jpg</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row field-video_url">
+                            <label><i class="fas fa-video ml-1"></i> رابط الفيديو:</label>
+                            <input type="url" name="blocks-1-video_url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        
+                        <div class="form-row field-settings">
+                            <label><i class="fas fa-cog ml-1"></i> إعدادات إضافية:</label>
+                            <textarea name="blocks-1-settings" rows="2" placeholder='{"width": "100%", "caption": "شكل 1: تطور الذكاء الاصطناعي"}'></textarea>
+                        </div>
+                        
+                        <input type="hidden" name="blocks-1-id" value="2">
+                        <input type="hidden" name="blocks-1-post" value="5">
+                    </fieldset>
+                </div>
+                
+                <!-- Empty Form Template (for JavaScript) -->
+                <div class="inline-related empty-form" id="blocks-empty">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-grip-vertical drag-handle cursor-move"></i>
+                            <span class="block-type-badge block-type-text">
+                                <i class="fas fa-paragraph ml-1"></i> كتلة نصية
+                            </span>
+                        </div>
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeBlock(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <fieldset class="module aligned">
+                        <div class="form-row field-order">
+                            <label>الترتيب:</label>
+                            <input type="number" name="blocks-__prefix__-order" value="" class="vIntegerField">
+                        </div>
+                        <div class="form-row field-block_type">
+                            <label>نوع الكتلة:</label>
+                            <select name="blocks-__prefix__-block_type">
+                                <option value="text" selected>نص</option>
+                                <option value="image">صورة</option>
+                                <option value="video">فيديو</option>
+                                <option value="quote">اقتباس</option>
+                                <option value="code">كود</option>
+                            </select>
+                        </div>
+                        <div class="form-row field-text">
+                            <label>محتوى النص:</label>
+                            <textarea name="blocks-__prefix__-text" rows="5" placeholder="اكتب محتوى الكتلة النصية هنا..."></textarea>
+                        </div>
+                        <div class="form-row field-image">
+                            <label>الصورة:</label>
+                            <input type="file" name="blocks-__prefix__-image" accept="image/*">
+                        </div>
+                        <div class="form-row field-video_url">
+                            <label>رابط الفيديو:</label>
+                            <input type="url" name="blocks-__prefix__-video_url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-row field-settings">
+                            <label>إعدادات إضافية:</label>
+                            <textarea name="blocks-__prefix__-settings" rows="2" placeholder='{"class": "highlight"}'></textarea>
+                        </div>
+                        <input type="hidden" name="blocks-__prefix__-id">
+                        <input type="hidden" name="blocks-__prefix__-post">
+                    </fieldset>
+                </div>
+            </div>
+            
+            <!-- Add Button -->
+            <button type="button" class="btn-add" onclick="addBlock()">
+                <i class="fas fa-plus ml-2"></i>
+                إضافة كتلة جديدة
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Drag and Drop functionality
+        let draggedItem = null;
+        
+        function initDragAndDrop() {
+            const container = document.getElementById('blocks-items');
+            const items = document.querySelectorAll('.inline-related:not(.empty-form)');
+            
+            items.forEach(item => {
+                item.setAttribute('draggable', 'true');
+                
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    e.dataTransfer.effectAllowed = 'move';
+                    this.classList.add('opacity-50');
+                });
+                
+                item.addEventListener('dragend', function(e) {
+                    if (draggedItem) {
+                        draggedItem.classList.remove('opacity-50');
+                        draggedItem = null;
+                    }
+                });
+                
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    if (draggedItem && draggedItem !== this) {
+                        const parent = this.parentNode;
+                        const draggedIndex = Array.from(parent.children).indexOf(draggedItem);
+                        const targetIndex = Array.from(parent.children).indexOf(this);
+                        
+                        if (draggedIndex < targetIndex) {
+                            parent.insertBefore(draggedItem, this.nextSibling);
+                        } else {
+                            parent.insertBefore(draggedItem, this);
+                        }
+                        
+                        // Update order values
+                        updateOrderValues();
+                    }
+                });
+            });
+        }
+        
+        function updateOrderValues() {
+            const items = document.querySelectorAll('.inline-related:not(.empty-form)');
+            items.forEach((item, index) => {
+                const orderInput = item.querySelector('input[name*="-order"]');
+                if (orderInput) {
+                    orderInput.value = index;
+                }
+            });
+        }
+        
+        function addBlock() {
+            const container = document.getElementById('blocks-items');
+            const emptyForm = document.getElementById('blocks-empty');
+            const totalForms = document.getElementById('id_blocks-TOTAL_FORMS');
+            const formNum = parseInt(totalForms.value);
+            
+            const newForm = emptyForm.cloneNode(true);
+            newForm.classList.remove('empty-form');
+            newForm.style.display = 'block';
+            newForm.id = `blocks-${formNum}`;
+            
+            // Replace __prefix__ with form number
+            newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formNum);
+            
+            container.appendChild(newForm);
+            totalForms.value = formNum + 1;
+            
+            // Make new form draggable
+            newForm.setAttribute('draggable', 'true');
+            initDragAndDrop();
+            
+            // Scroll to new form
+            newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function removeBlock(button) {
+            const block = button.closest('.inline-related');
+            if (block && !block.classList.contains('empty-form')) {
+                if (confirm('هل أنت متأكد من حذف هذه الكتلة؟')) {
+                    block.remove();
+                    updateOrderValues();
+                    
+                    // Update total forms count
+                    const totalForms = document.getElementById('id_blocks-TOTAL_FORMS');
+                    const currentCount = document.querySelectorAll('.inline-related:not(.empty-form)').length;
+                    totalForms.value = currentCount;
+                }
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateOrderValues();
+            
+            // Style file input
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.classList.add('cursor-pointer');
+            });
+            
+            // Style select inputs
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                select.classList.add('cursor-pointer');
+            });
+        });
+    </script>
+</body>
+</html>

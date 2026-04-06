@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+{% load i18n admin_urls static admin_modify %}
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل المقال - لوحة إدارة كنوز</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.16.2/full-all/ckeditor.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: #f3f4f6;
+        }
+        
+        .dark body {
+            background: #111827;
+        }
+        
+        /* Admin Container */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .admin-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        /* Object Tools */
+        .object-tools {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        
+        .object-tools li {
+            display: inline-block;
+        }
+        
+        .content-builder-link {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .content-builder-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+            color: white;
+        }
+        
+        .historylink, .viewsitelink {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .historylink:hover, .viewsitelink:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* Module */
+        .module {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .dark .module {
+            background: #1f2937;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .module h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dark .module h2 {
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        
+        /* Form Rows */
+        .form-row {
+            margin-bottom: 20px;
+        }
+        
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .dark .form-row label {
+            color: #e5e7eb;
+        }
+        
+        .form-row input, 
+        .form-row textarea, 
+        .form-row select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .dark .form-row input,
+        .dark .form-row textarea,
+        .dark .form-row select {
+            background: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        
+        .form-row input:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        
+        /* Checkbox row */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .checkbox-row input {
+            width: auto;
+        }
+        
+        .checkbox-row label {
+            margin-bottom: 0;
+        }
+        
+        /* Readonly */
+        .readonly {
+            background: #f3f4f6;
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #6b7280;
+        }
+        
+        .dark .readonly {
+            background: #374151;
+            color: #9ca3af;
+        }
+        
+        /* Help text */
+        .help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        .dark .help {
+            color: #9ca3af;
+        }
+        
+        /* Errors */
+        .errors {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+        }
+        
+        /* Full width field */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        /* Description box */
+        .description {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-right: 4px solid #3b82f6;
+        }
+        
+        .dark .description {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+        }
+        
+        .description ol {
+            margin-right: 20px;
+            margin-top: 10px;
+        }
+        
+        .description li {
+            margin-bottom: 8px;
+        }
+        
+        /* Submit Row */
+        .submit-row {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .dark .submit-row {
+            border-color: #4b5563;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        }
+        
+        .btn-save-add {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+        }
+        
+        /* Grid for two columns */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold flex items-center gap-3">
+                        <i class="fas fa-edit text-blue-400"></i>
+                        تعديل المقال: "مقدمة في تعلم الآلة"
+                    </h1>
+                    <p class="text-gray-300 mt-2">قم بتعديل معلومات المقال ومحتواه</p>
+                </div>
+                
+                <!-- Object Tools -->
+                <ul class="object-tools">
+                    <li>
+                        <a href="content_builder.html" class="content-builder-link">
+                            <i class="fas fa-cubes"></i>
+                            🛠️ محرر المحتوى المتقدم
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="historylink">
+                            <i class="fas fa-history"></i>
+                            السجل
+                        </a>
+                    </li>
+                    <li>
+                        <a href="post-detail.html" class="viewsitelink" target="_blank">
+                            <i class="fas fa-eye"></i>
+                            عرض في الموقع
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Form -->
+        <form method="post" enctype="multipart/form-data">
+            <!-- Basic Info Module -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-info-circle text-blue-500"></i>
+                    المعلومات الأساسية
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-row field-title">
+                        <label><i class="fas fa-heading ml-1"></i> العنوان:</label>
+                        <input type="text" name="title" value="مقدمة في تعلم الآلة" placeholder="أدخل عنوان المقال">
+                        <div class="help">عنوان المقال سيظهر في محركات البحث</div>
+                    </div>
+                    
+                    <div class="form-row field-slug">
+                        <label><i class="fas fa-link ml-1"></i> الرابط المختصر (Slug):</label>
+                        <input type="text" name="slug" value="mokadma-fy-t3lm-al-ala">
+                        <div class="help">سيتم إنشاؤه تلقائياً إذا تركته فارغاً</div>
+                    </div>
+                    
+                    <div class="form-row field-category">
+                        <label><i class="fas fa-folder ml-1"></i> التصنيف:</label>
+                        <select name="category">
+                            <option value="1">كورسات</option>
+                            <option value="2" selected>مقالات</option>
+                            <option value="3">منح</option>
+                            <option value="4">كتب</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row field-status">
+                        <label><i class="fas fa-circle ml-1"></i> الحالة:</label>
+                        <select name="status">
+                            <option value="draft">مسودة</option>
+                            <option value="published" selected>منشور</option>
+                            <option value="private">خاص</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row field-publish_date">
+                        <label><i class="fas fa-calendar ml-1"></i> تاريخ النشر:</label>
+                        <input type="datetime-local" name="publish_date" value="2024-01-20T10:00">
+                    </div>
+                    
+                    <div class="form-row field-author">
+                        <label><i class="fas fa-user ml-1"></i> المؤلف:</label>
+                        <select name="author">
+                            <option value="1" selected>أحمد محمد</option>
+                            <option value="2">سارة أحمد</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Images Module -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-image text-green-500"></i>
+                    الصور
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-row field-featured_image">
+                        <label><i class="fas fa-star ml-1"></i> الصورة الرئيسية:</label>
+                        <input type="file" name="featured_image" accept="image/*">
+                        <div class="help">الصورة التي تظهر أعلى المقال وفي المشاركات الاجتماعية</div>
+                        <div class="mt-2">
+                            <img src="assets/images/featured-ai.jpg" class="max-h-32 rounded" alt="الصورة الحالية">
+                            <p class="text-xs text-gray-500 mt-1">الصورة الحالية: featured-ai.jpg</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row field-image">
+                        <label><i class="fas fa-thumbnail ml-1"></i> الصورة المصغرة:</label>
+                        <input type="file" name="image" accept="image/*">
+                        <div class="help">الصورة التي تظهر في قائمة المقالات</div>
+                        <div class="mt-2">
+                            <img src="assets/images/thumbnail-ai.jpg" class="max-h-32 rounded" alt="الصورة الحالية">
+                            <p class="text-xs text-gray-500 mt-1">الصورة الحالية: thumbnail-ai.jpg</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO Module -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-search text-purple-500"></i>
+                    تحسين محركات البحث (SEO)
+                </h2>
+                
+                <div class="form-row field-seo_title">
+                    <label><i class="fas fa-tag ml-1"></i> عنوان SEO:</label>
+                    <input type="text" name="seo_title" value="مقدمة في تعلم الآلة - دليل شامل للمبتدئين">
+                    <div class="help">يُفضل أن يكون بين 50-60 حرفاً</div>
+                </div>
+                
+                <div class="form-row field-seo_description">
+                    <label><i class="fas fa-align-left ml-1"></i> وصف SEO:</label>
+                    <textarea name="seo_description" rows="3">تعلم أساسيات تعلم الآلة وأهم الخوارزميات المستخدمة في هذا المجال. دليل شامل للمبتدئين يشمل الأنواع والتطبيقات العملية.</textarea>
+                    <div class="help">يُفضل أن يكون بين 150-160 حرفاً</div>
+                </div>
+                
+                <div class="form-row field-seo_keywords">
+                    <label><i class="fas fa-tags ml-1"></i> الكلمات المفتاحية:</label>
+                    <input type="text" name="seo_keywords" value="تعلم الآلة, ذكاء اصطناعي, خوارزميات, تعلم تحت الإشراف">
+                    <div class="help">افصل الكلمات بفواصل</div>
+                </div>
+            </div>
+            
+            <!-- Content Module (with CKEditor) -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-edit text-orange-500"></i>
+                    المحتوى الرئيسي
+                </h2>
+                
+                <div class="description">
+                    <p><strong>💡 معلومات مهمة:</strong></p>
+                    <ol style="margin-right: 20px;">
+                        <li>يمكنك استخدام المحرر أدناه لكتابة المحتوى الرئيسي للمقال</li>
+                        <li>استخدم أزرار التنسيق لتنسيق النصوص وإضافة الصور والروابط</li>
+                        <li>المحتوى هنا سيظهر أعلى كتل المحتوى المتقدم</li>
+                    </ol>
+                </div>
+                
+                <div class="form-row field-content">
+                    <textarea name="content" id="content-editor" rows="15">
+                        <h2>ما هو تعلم الآلة؟</h2>
+                        <p>تعلم الآلة هو مجال فرعي من الذكاء الاصطناعي يهدف إلى تطوير خوارزميات ونماذج تمكن الحواسيب من التعلم من البيانات وتحسين أدائها مع مرور الوقت دون الحاجة إلى برمجتها بشكل صريح لكل مهمة.</p>
+                        
+                        <h2>أنواع تعلم الآلة</h2>
+                        <ul>
+                            <li><strong>التعلم تحت الإشراف (Supervised Learning)</strong> - استخدام بيانات مصنفة لتدريب النموذج</li>
+                            <li><strong>التعلم غير تحت الإشراف (Unsupervised Learning)</strong> - اكتشاف الأنماط في بيانات غير مصنفة</li>
+                            <li><strong>التعلم المعزز (Reinforcement Learning)</strong> - التعلم من خلال التفاعل مع البيئة والمكافآت</li>
+                        </ul>
+                        
+                        <h2>التطبيقات العملية</h2>
+                        <p>تستخدم تقنيات تعلم الآلة في العديد من المجالات مثل التعرف على الصور، معالجة اللغة الطبيعية، أنظمة التوصيات، التشخيص الطبي، والقيادة الذاتية.</p>
+                    </textarea>
+                </div>
+            </div>
+            
+            <!-- Advanced Content Builder Section (Inline Blocks) -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-layer-group text-indigo-500"></i>
+                    🎨 محرر المحتوى المتقدم (الكتل)
+                </h2>
+                
+                <div class="description">
+                    <p><strong>💡 طريقة الاستخدام:</strong></p>
+                    <ol style="margin-right: 20px;">
+                        <li>أضف كتل نصية أو صور باستخدام القسم أدناه</li>
+                        <li>اسحب وأفلت الكتل لترتيبها كما تريد</li>
+                        <li>استخدم زر "تعديل مفصل" للتحرير المتقدم</li>
+                        <li>المحتوى الأساسي أعلاه سيظهر قبل الكتل في المقال</li>
+                    </ol>
+                </div>
+                
+                <!-- Include the inline form for blocks -->
+                <div id="blocks-inline-container">
+                    <!-- This is where the tabular_with_actions.html content would be included -->
+                    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                        <p class="text-center text-gray-500 py-8">
+                            <i class="fas fa-cubes text-4xl mb-3 block"></i>
+                            هنا ستظهر كتل المحتوى (Text Blocks, Image Blocks, etc.)
+                        </p>
+                        <button type="button" class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-plus ml-2"></i>
+                            إضافة كتلة جديدة
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Settings Module -->
+            <div class="module">
+                <h2>
+                    <i class="fas fa-cog text-gray-500"></i>
+                    إعدادات متقدمة
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-row field-link">
+                        <label><i class="fas fa-external-link ml-1"></i> رابط خارجي:</label>
+                        <input type="url" name="link" value="https://example.com/ai-course" placeholder="https://...">
+                        <div class="help">رابط خارجي للمقال أو الكورس</div>
+                    </div>
+                    
+                    <div class="form-row field-link_delay">
+                        <label><i class="fas fa-clock ml-1"></i> تأخير الرابط (ثواني):</label>
+                        <input type="number" name="link_delay" value="30" min="0" max="60">
+                        <div class="help">وقت الانتظار قبل الانتقال للرابط الخارجي</div>
+                    </div>
+                    
+                    <div class="checkbox-row">
+                        <input type="checkbox" name="allow_comments" id="allow_comments" checked>
+                        <label for="allow_comments">السماح بالتعليقات على هذا المقال</label>
+                    </div>
+                    
+                    <div class="checkbox-row">
+                        <input type="checkbox" name="featured" id="featured">
+                        <label for="featured">مقال مميز (يظهر في الصفحة الرئيسية)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Row -->
+            <div class="submit-row">
+                <button type="submit" name="_save" class="btn-save">
+                    <i class="fas fa-save ml-2"></i>
+                    حفظ
+                </button>
+                <button type="submit" name="_continue" class="btn-save-add">
+                    <i class="fas fa-save ml-2"></i>
+                    حفظ ومتابعة التحرير
+                </button>
+                <button type="submit" name="_addanother" class="btn-save-add">
+                    <i class="fas fa-plus ml-2"></i>
+                    حفظ وإضافة جديد
+                </button>
+                <button type="button" class="btn-delete" onclick="if(confirm('هل أنت متأكد من حذف هذا المقال؟')) window.location.href='delete.html'">
+                    <i class="fas fa-trash ml-2"></i>
+                    حذف
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // Initialize CKEditor
+        CKEDITOR.replace('content-editor', {
+            language: 'ar',
+            height: 400,
+            toolbarGroups: [
+                { name: 'document', groups: ['mode', 'document', 'doctools'] },
+                { name: 'clipboard', groups: ['clipboard', 'undo'] },
+                { name: 'editing', groups: ['find', 'selection', 'spellchecker'] },
+                { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+                { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'] },
+                { name: 'links' },
+                { name: 'insert' },
+                { name: 'styles' },
+                { name: 'colors' },
+                { name: 'tools' }
+            ],
+            removeButtons: 'Save,NewPage,Preview,Print,Templates,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Outdent,Indent,CreateDiv,Blockquote,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,BidiLtr,BidiRtl,Language,Anchor,Flash,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Maximize,About',
+            extraPlugins: 'colorbutton,font,justify'
+        });
+        
+        // Add classes to form elements
+        document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), textarea, select').forEach(el => {
+            el.classList.add('w-full', 'p-3', 'border', 'rounded-lg', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-blue-500');
+        });
+        
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+            el.classList.add('w-5', 'h-5', 'rounded', 'border-gray-300', 'focus:ring-2', 'focus:ring-blue-500');
+        });
+        
+        document.querySelectorAll('input[type="file"]').forEach(el => {
+            el.classList.add('w-full', 'p-2', 'border', 'rounded-lg', 'cursor-pointer');
+        });
+        
+        // Dark mode support
+        const isDark = localStorage.getItem('theme') === 'dark' || 
+                      (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
+        
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html>
